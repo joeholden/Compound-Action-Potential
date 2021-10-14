@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import statistics
+from scipy import interpolate
 
 abf_files = []
 folder_path = 'C:/Users/joema/PycharmProjects/CAP/files/'
@@ -44,10 +45,18 @@ cap_file = abf_files[5]
 avg_noise = find_baseline_noise(abf_files[5])
 cap_file.setSweep(sweepNumber=0, channel=0)
 
-plt.plot(cap_file.sweepX, cap_file.sweepY)
-plt.xlim(.32, .360)
-plt.ylim(-1, 130)
-plt.plot(cap_file.sweepX, np.full(cap_file.sweepX.shape, avg_noise))
+plt.plot(cap_file.sweepX, cap_file.sweepY, color='k', linewidth=0.3)
+
+plt.xlim(.30, .38)
+plt.ylim(-50, 300)
+avg_baseline_array = np.full(cap_file.sweepX.shape, avg_noise)
+plt.plot(cap_file.sweepX, avg_baseline_array, color='k')
+
+plt.fill_between(cap_file.sweepX, cap_file.sweepY, avg_baseline_array,
+                 where=cap_file.sweepY - avg_baseline_array > 0, color='green', alpha=1)
+plt.fill_between(cap_file.sweepX, cap_file.sweepY, avg_baseline_array,
+                 where=cap_file.sweepY - avg_baseline_array < 0, color='maroon', alpha=1)
+
 
 plt.show()
 
