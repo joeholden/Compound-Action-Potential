@@ -24,8 +24,9 @@ for file in os.listdir(folder_path):
     if '21o14' in file:
         abf = pyabf.ABF(folder_path + file)
         abf_files.append(abf)
-cap_file = abf_files[114]
-
+cap_file = abf_files[19]
+# 114
+# bug with #41... theres three peaks detected not just the two. so the fill <> condition is not met
 
 def find_impulse(cap_file):
     """This function will return a 3-member tuple. The first
@@ -54,7 +55,6 @@ def find_baseline_noise(cap_file):
 
     standard_dev = np.std(cap_file.sweepY[0:(time_indices_of_pulse[0] - 100)])
 
-    print(standard_dev)
     baseline_peaks = []
     baseline_troughs = []
 
@@ -160,27 +160,27 @@ avg_noise, avg_spread_from_mean = find_baseline_noise(cap_file)
 
 cap_file.setSweep(sweepNumber=0, channel=0)
 
-plt.plot(cap_file.sweepX, cap_file.sweepY, color='k', linewidth=0.3)
-
-plt.xlim(.325, .335)
-plt.ylim(-20, 300)
+plt.plot(cap_file.sweepX, cap_file.sweepY, color='k', linewidth=0.6)
 avg_baseline_array = np.full(cap_file.sweepX.shape, avg_noise)
 plt.plot(cap_file.sweepX, avg_baseline_array, color='k')
 
-
+plt.xlim(.327, .332)
+plt.ylim(-100, 400)
 
 b = find_regions(cap_file)
 
-plt.fill_between(cap_file.sweepX, cap_file.sweepY, avg_baseline_array,
-                 where=cap_file.sweepY - avg_baseline_array > 0, color='turquoise', alpha=.8)
-plt.fill_between(cap_file.sweepX, cap_file.sweepY, avg_baseline_array,
-                 where=cap_file.sweepY - avg_baseline_array < 0, color='maroon', alpha=.8)
+p1l, p1r = b[0]
+p2l, p2r = b[1]
+
+plt.fill_between(cap_file.sweepX[p1l:p1r], cap_file.sweepY[p1l:p1r], avg_baseline_array[p1l:p1r],
+                 where=cap_file.sweepY[p1l:p1r] - avg_baseline_array[p1l:p1r] > 0, color='#6b5b95', alpha=.8)
+plt.fill_between(cap_file.sweepX[p2l:p2r], cap_file.sweepY[p2l:p2r], avg_baseline_array[p2l:p2r],
+                 where=cap_file.sweepY[p2l:p2r] - avg_baseline_array[p2l:p2r] < 0, color='#feb236', alpha=.8)
 
 
-
-for i, j in find_regions(cap_file):
-    plt.axvline(x=i / 50000)
-    plt.axvline(x=j / 50000)
+# for i, j in find_regions(cap_file):
+#     plt.axvline(x=i / 50000)
+#     plt.axvline(x=j / 50000)
 
 plt.show()
 
