@@ -10,6 +10,8 @@ from pathlib import Path
 from openpyxl import Workbook, load_workbook
 import re
 
+# Units of area are volt * seconds
+# Units for latency are seconds
 
 def main(sweep_number):
     global error_present
